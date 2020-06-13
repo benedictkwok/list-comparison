@@ -81,10 +81,13 @@ def add_sophos_column_to_Iventi(sophos_device_hosts):
     #print (iventi.columns)
     #print (iventi.owner)
     #print (type (iventi.device_name))
-    iventi['Is in Sophos'] = iventi.device_name.isin(sophos_device_hosts)
+    #iventi['Is in Sophos'] = iventi.device_name.isin(sophos_device_hosts)
+    #df[df['column'].str.lower().isin([x.lower() for x in mylist])]
+    iventi['Is in Sophos'] = iventi.device_name.str.lower().isin([x.lower() for x in sophos_device_hosts])
+
     #print (iventi.head())
     iventi.to_csv('/Users/bkwok/Downloads/Iventi_Sophos.csv', index=False)
-    print ("Writing file to .../Users/bkwok/Downloads/Iventi_Sophos.csv")
+    print ("Writing file to .../Users/bkwok/Downloads/Iventi_Sophos-2.csv")
 def nessus():
     with open('/Users/bkwok/Downloads/xperi_internal_nessus_ip.txt', 'r') as f1:
         for row in f1:
@@ -130,9 +133,11 @@ def main():
     print("No. of Iventi IPs: ", len(list(iventi_ips)))
     print("No. of Nessus IPs: ", len(list(nessus_ips)))
     print("No. of devices found in both Sophos and Iventi : ",
-          len(list(filter(lambda x: x in sophos_device_hosts, iventi_hosts))))
-    print("No. of Iventi devices not in Sophos : ", len(list(filter(lambda x: x not in sophos_device_hosts, iventi_hosts))))
-    print("No. of Sophos devices not in Iventi : ", len(list(filter(lambda x: x not in iventi_hosts, sophos_device_hosts))))
+          len(list(filter(lambda x: x in [x.lower() for x in sophos_device_hosts], [x.lower() for x in iventi_hosts]))))
+    #print("No. of Iventi devices not in Sophos : ", len(list(filter(lambda x: x not in sophos_device_hosts, iventi_hosts))))
+    print("No. of Iventi devices not in Sophos : ", len(list(filter(lambda x: x not in [x.lower() for x in sophos_device_hosts], [x.lower() for x in iventi_hosts]))))
+    #print("No. of Sophos devices not in Iventi : ", len(list(filter(lambda x: x not in iventi_hosts, sophos_device_hosts))))
+    print("No. of Sophos devices not in Iventi : ", len(list(filter(lambda x: x not in [x.lower() for x in iventi_hosts], [x.lower() for x in sophos_device_hosts]))))
     #print("No. of IPs found in both Sophos and Iventi : ", len(list(filter(lambda x: x in sophos_ips, iventi_ips))))
     print("No. of IPs found in both Sophos and Nessus : ", len(list(filter(lambda x: x in sophos_all_ips, nessus_ips))))
     print("No. of IPs found in both Iventi and Nessus : ", len(list(filter(lambda x: x in iventi_ips, nessus_ips))))
